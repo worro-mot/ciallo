@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Heart, Send } from 'lucide-react';
+import { Heart, Send, Grid3X3, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -73,6 +73,7 @@ const Index = () => {
   ]);
 
   const [newMessage, setNewMessage] = useState('');
+  const [isGalleryView, setIsGalleryView] = useState(false);
 
   const handleLike = (messageId: number) => {
     setMessages(prevMessages =>
@@ -130,24 +131,43 @@ const Index = () => {
         </div>
       </header>
 
+      {/* View Toggle Button */}
+      <div className="fixed top-20 right-4 z-20">
+        <Button
+          onClick={() => setIsGalleryView(!isGalleryView)}
+          className="bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white shadow-lg"
+          size="sm"
+        >
+          {isGalleryView ? <List size={16} /> : <Grid3X3 size={16} />}
+        </Button>
+      </div>
+
       {/* Messages Body */}
-      <main className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+      <main className={`max-w-6xl mx-auto px-4 py-6 ${
+        isGalleryView 
+          ? 'grid grid-cols-4 gap-4' 
+          : 'max-w-4xl space-y-4'
+      }`}>
         {messages.map((message) => (
           <div
             key={message.id}
-            className="bg-white/90 backdrop-blur-sm rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100"
+            className={`bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 ${
+              isGalleryView ? 'p-2' : 'p-3'
+            }`}
           >
-            <div className="flex items-center space-x-3">
-              <div className="text-2xl bg-gradient-to-br from-pink-100 to-purple-100 rounded-full w-12 h-12 flex items-center justify-center flex-shrink-0">
+            <div className={`flex ${isGalleryView ? 'flex-col' : 'items-center'} ${isGalleryView ? 'space-y-2' : 'space-x-3'}`}>
+              <div className={`bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center flex-shrink-0 ${
+                isGalleryView ? 'w-8 h-8 text-lg self-center' : 'w-12 h-12 text-2xl'
+              }`}>
                 {message.avatar}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2 mb-1">
-                  <h3 className="font-semibold text-gray-800 text-sm">{message.username}</h3>
-                  <span className="text-xs text-gray-500">{message.timestamp}</span>
+              <div className={`${isGalleryView ? 'text-center' : 'flex-1 min-w-0'}`}>
+                <div className={`flex items-center ${isGalleryView ? 'flex-col space-y-1' : 'space-x-2'} mb-1`}>
+                  <h3 className={`font-semibold text-gray-800 ${isGalleryView ? 'text-xs' : 'text-sm'}`}>{message.username}</h3>
+                  <span className={`text-gray-500 ${isGalleryView ? 'text-xs' : 'text-xs'}`}>{message.timestamp}</span>
                 </div>
-                <p className="text-gray-700 mb-2 text-base">{message.content}</p>
-                <div className="flex items-center">
+                <p className={`text-gray-700 mb-2 ${isGalleryView ? 'text-xs' : 'text-base'}`}>{message.content}</p>
+                <div className={`flex items-center ${isGalleryView ? 'justify-center' : ''}`}>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -157,7 +177,7 @@ const Index = () => {
                     onClick={() => handleLike(message.id)}
                   >
                     <Heart
-                      size={14}
+                      size={12}
                       className={message.isLiked ? 'fill-current' : ''}
                     />
                     <span className="text-xs">{message.likes}</span>
