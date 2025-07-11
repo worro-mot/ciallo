@@ -152,7 +152,7 @@ const Index = () => {
         </div>
 
         {/* Messages Body */}
-        <main className={`max-w-6xl mx-auto px-4 py-6 ${
+        <main className={`max-w-6xl mx-auto px-4 py-6 custom-scrollbar max-h-screen overflow-y-auto ${
           isGalleryView 
             ? 'grid grid-cols-4 gap-4' 
             : 'max-w-4xl space-y-4'
