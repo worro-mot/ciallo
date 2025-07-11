@@ -135,32 +135,32 @@ const Index = () => {
         {messages.map((message) => (
           <div
             key={message.id}
-            className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100"
           >
-            <div className="flex items-start space-x-4">
-              <div className="text-3xl bg-gradient-to-br from-pink-100 to-purple-100 rounded-full w-12 h-12 flex items-center justify-center">
+            <div className="flex items-center space-x-3">
+              <div className="text-2xl bg-gradient-to-br from-pink-100 to-purple-100 rounded-full w-12 h-12 flex items-center justify-center flex-shrink-0">
                 {message.avatar}
               </div>
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-2">
-                  <h3 className="font-semibold text-gray-800">{message.username}</h3>
-                  <span className="text-sm text-gray-500">{message.timestamp}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2 mb-1">
+                  <h3 className="font-semibold text-gray-800 text-sm">{message.username}</h3>
+                  <span className="text-xs text-gray-500">{message.timestamp}</span>
                 </div>
-                <p className="text-gray-700 mb-3 text-lg">{message.content}</p>
-                <div className="flex items-center space-x-2">
+                <p className="text-gray-700 mb-2 text-base">{message.content}</p>
+                <div className="flex items-center">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`flex items-center space-x-1 hover:bg-pink-100 transition-colors ${
+                    className={`flex items-center space-x-1 hover:bg-pink-100 transition-colors h-7 px-2 ${
                       message.isLiked ? 'text-pink-500' : 'text-gray-500'
                     }`}
                     onClick={() => handleLike(message.id)}
                   >
                     <Heart
-                      size={16}
+                      size={14}
                       className={message.isLiked ? 'fill-current' : ''}
                     />
-                    <span>{message.likes}</span>
+                    <span className="text-xs">{message.likes}</span>
                   </Button>
                 </div>
               </div>
