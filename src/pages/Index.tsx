@@ -145,7 +145,7 @@ const Index = () => {
                 {isGalleryView ? <List size={16} /> : <Grid3X3 size={16} />}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left">
+            <TooltipContent side="left" className="bg-pink-100 border-pink-200 text-pink-800">
               <p>Ciallo～(∠・ω&lt; )!</p>
             </TooltipContent>
           </Tooltip>
