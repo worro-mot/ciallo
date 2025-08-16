@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Heart, Send, Grid3X3, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 
@@ -95,20 +95,22 @@ const Index = () => {
 
         {/* View Toggle Button */}
         <div className="fixed top-20 right-4 z-20">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => setIsGalleryView(!isGalleryView)}
-                className="bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white shadow-lg"
-                size="sm"
-              >
-                {isGalleryView ? <List size={16} /> : <Grid3X3 size={16} />}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>Ciallo～(∠・ω&lt; )⌒★!</p>
-            </TooltipContent>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => setIsGalleryView(!isGalleryView)}
+                  className="bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white shadow-lg"
+                  size="sm"
+                >
+                  {isGalleryView ? <List size={16} /> : <Grid3X3 size={16} />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Ciallo～(∠・ω&lt; )⌒★!</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {/* Messages Body */}
