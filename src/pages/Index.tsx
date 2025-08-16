@@ -4,6 +4,7 @@ import { Heart, Send, Grid3X3, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 
 interface Message {
@@ -36,7 +37,7 @@ const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isGalleryView, setIsGalleryView] = useState(false);
-  const [postError, setPostError] = useState('');
+  const { toast } = useToast();
 
   const loadMessagesFromAPI = () => {
     axios.get('http://127.0.0.1:8000/ciallo/messages/').then((res) => {
@@ -54,8 +55,18 @@ const Index = () => {
       loadMessagesFromAPI();
     }).catch((e)=>{
       console.error("Posting failed: " +e);
-      // setPostError();
-      // loadMessagesFromAPI();
+      
+      // Extract error details
+      const errorCode = e.response?.status || 'Unknown';
+      const errorMessage = e.response?.data?.message || e.message || 'Failed to post message';
+      
+      toast({
+        variant: "destructive",
+        title: "Message failed to send",
+        description: `Error ${errorCode}: ${errorMessage}`,
+      });
+      
+      loadMessagesFromAPI();
     })
   };
 
