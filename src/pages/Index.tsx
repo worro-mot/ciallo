@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Heart, Send, Grid3X3, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 
@@ -80,7 +80,6 @@ const Index = () => {
   
 
   return (
-    <TooltipProvider>
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 pb-20">
         {/* Header */}
         <header className="bg-white/80 backdrop-blur-sm border-b border-pink-200 py-6 sticky top-0 z-10">
@@ -168,7 +167,6 @@ const Index = () => {
           </div>
         </div>
       </div>
-    </TooltipProvider>
   );
 };
 
