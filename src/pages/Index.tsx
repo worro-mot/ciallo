@@ -1,122 +1,72 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Heart, Send, Grid3X3, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import axios from 'axios';
 
 interface Message {
   id: number;
-  username: string;
-  avatar: string;
   timestamp: string;
-  content: string;
-  likes: number;
-  isLiked: boolean;
+  country: string;
+  username: string;
 }
 
-const Index = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      username: "KawaiiNeko",
-      avatar: "🐱",
-      timestamp: "2024-01-15 14:30",
-      content: "Ciallo～(∠・ω< )!",
-      likes: 12,
-      isLiked: false
-    },
-    {
-      id: 2,
-      username: "RainbowUnicorn",
-      avatar: "🦄",
-      timestamp: "2024-01-15 14:32",
-      content: "Ciallo～(∠・ω< )!",
-      likes: 8,
-      isLiked: true
-    },
-    {
-      id: 3,
-      username: "StarDust",
-      avatar: "⭐",
-      timestamp: "2024-01-15 14:35",
-      content: "Ciallo～(∠・ω< )!",
-      likes: 15,
-      isLiked: false
-    },
-    {
-      id: 4,
-      username: "FluffyCloud",
-      avatar: "☁️",
-      timestamp: "2024-01-15 14:40",
-      content: "Ciallo～(∠・ω< )!",
-      likes: 23,
-      isLiked: true
-    },
-    {
-      id: 5,
-      username: "SakuraBlossom",
-      avatar: "🌸",
-      timestamp: "2024-01-15 14:45",
-      content: "Ciallo～(∠・ω< )!",
-      likes: 7,
-      isLiked: false
-    },
-    {
-      id: 6,
-      username: "MoonbeamDreamer",
-      avatar: "🌙",
-      timestamp: "2024-01-15 14:50",
-      content: "Ciallo～(∠・ω< )!",
-      likes: 19,
-      isLiked: false
+function convertTimestampToRelative(str: string): string {
+  let diff = Date.now() - new Date(str).getTime();
+  // 1000ms - 1s | 60s - 1m | 60m - 1hr | 24h - 1d | 7d - 1w | 4.3w - 1m | 12m - 1yr
+  const timeDiv = [1000, 60, 60, 24, 7, 4.35, 12];
+  const timeName = [' second', ' minute', ' hour', ' day', ' week', ' month', ' year'];
+  for (let i = 0; i < 7; i++) {
+    const quo = Math.floor(diff / timeDiv[i]);
+    if (i < 6 && quo >= timeDiv[i+1]) {
+      diff /= timeDiv[i ];
+      continue;
     }
-  ]);
+    if (quo == 1) return quo + timeName[i];
+    return quo + timeName[i] + 's';
+  }
+  return 'literally just now. like at this very moment. how did this even happen?';
+}
 
+
+
+const Index = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isGalleryView, setIsGalleryView] = useState(false);
+  const [postError, setPostError] = useState('');
 
-  const handleLike = (messageId: number) => {
-    setMessages(prevMessages =>
-      prevMessages.map(message =>
-        message.id === messageId
-          ? {
-              ...message,
-              likes: message.isLiked ? message.likes - 1 : message.likes + 1,
-              isLiked: !message.isLiked
-            }
-          : message
-      )
-    );
-  };
+  const loadMessagesFromAPI = () => {
+    axios.get('http://127.0.0.1:8000/ciallo/messages/').then((res) => {
+      setMessages(res.data.reverse());
+    }).catch((err) => {
+      console.error("Failed to fetch messages: " + err);
+    });
+  }
 
+  useEffect(() => {
+    loadMessagesFromAPI();
+  }, []);
   const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      const message: Message = {
-        id: messages.length + 1,
-        username: "You",
-        avatar: "😊",
-        timestamp: new Date().toLocaleString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        content: newMessage,
-        likes: 0,
-        isLiked: false
-      };
-      setMessages(prev => [...prev, message]);
-      setNewMessage('');
-    }
+    axios.post('http://127.0.0.1:8000/ciallo/messages/', {'username': newMessage.trim().substring(0, 16)}).then((res) => {
+      loadMessagesFromAPI();
+    }).catch((e)=>{
+      console.error("Posting failed: " +e);
+      // setPostError();
+      // loadMessagesFromAPI();
+    })
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      setNewMessage('');
       handleSendMessage();
     }
   };
+
+  
 
   return (
     <TooltipProvider>
@@ -128,7 +78,7 @@ const Index = () => {
               <span className="bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 via-indigo-500 to-purple-500 bg-clip-text text-transparent animate-pulse">
                 Ciallo
               </span>
-              <span className="text-pink-400 ml-2">～(∠・ω&lt; )!</span>
+              <span className="text-pink-400 ml-2">～(∠・ω&lt; )⌒★!</span>
             </h1>
           </div>
         </header>
@@ -146,7 +96,7 @@ const Index = () => {
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Ciallo～(∠・ω&lt; )!</p>
+              <p>Ciallo～(∠・ω&lt; )⌒★!</p>
             </TooltipContent>
           </Tooltip>
         </div>
@@ -165,33 +115,12 @@ const Index = () => {
               }`}
             >
               <div className={`flex ${isGalleryView ? 'flex-col' : 'items-center'} ${isGalleryView ? 'space-y-2' : 'space-x-3'}`}>
-                <div className={`bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  isGalleryView ? 'w-8 h-8 text-lg self-center' : 'w-12 h-12 text-2xl'
-                }`}>
-                  {message.avatar}
-                </div>
                 <div className={`${isGalleryView ? 'text-center' : 'flex-1 min-w-0'}`}>
                   <div className={`flex items-center ${isGalleryView ? 'flex-col space-y-1' : 'space-x-2'} mb-1`}>
                     <h3 className={`font-semibold text-gray-800 ${isGalleryView ? 'text-xs' : 'text-sm'}`}>{message.username}</h3>
-                    <span className={`text-gray-500 ${isGalleryView ? 'text-xs' : 'text-xs'}`}>{message.timestamp}</span>
+                    <span className={`text-gray-500 ${isGalleryView ? 'text-xs' : 'text-xs'}`}>from {message.country} - {convertTimestampToRelative(message.timestamp)} ago~</span>
                   </div>
-                  <p className={`text-gray-700 mb-2 ${isGalleryView ? 'text-xs' : 'text-base'}`}>{message.content}</p>
-                  <div className={`flex items-center ${isGalleryView ? 'justify-center' : ''}`}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={`flex items-center space-x-1 hover:bg-pink-100 transition-colors h-7 px-2 ${
-                        message.isLiked ? 'text-pink-500' : 'text-gray-500'
-                      }`}
-                      onClick={() => handleLike(message.id)}
-                    >
-                      <Heart
-                        size={12}
-                        className={message.isLiked ? 'fill-current' : ''}
-                      />
-                      <span className="text-xs">{message.likes}</span>
-                    </Button>
-                  </div>
+                  <p className={`text-gray-700 mb-2 ${isGalleryView ? 'text-xs' : 'text-base'}`}>{`Ciallo～(∠・ω< )⌒★!`}</p>
                 </div>
               </div>
             </div>
@@ -202,8 +131,7 @@ const Index = () => {
         <footer className="bg-pink-100/50 backdrop-blur-sm border-t border-pink-200 py-8 mt-12">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <p className="text-gray-600">
-              Welcome to our discussion thread! Share your thoughts and connect with the community.
-              Remember to be kind and respectful to everyone. Enjoy your stay! ✨
+              helo
             </p>
           </div>
         </footer>
@@ -212,16 +140,17 @@ const Index = () => {
         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-pink-200 p-4 z-20">
           <div className="max-w-4xl mx-auto flex items-center space-x-3">
             <Input
-              placeholder="Ciallo～(∠・ω< )!"
+              placeholder="Ciallo～(∠・ω< )⌒★! - Who do you want to be known as?"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               className="flex-1 border-pink-200 focus:border-pink-400 focus:ring-pink-400"
+              maxLength={15} // tf??
             />
             <Button
               onClick={handleSendMessage}
               className="bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white"
-              disabled={!newMessage.trim()}
+              // disabled={!newMessage.trim()}
             >
               <Send size={16} />
             </Button>
