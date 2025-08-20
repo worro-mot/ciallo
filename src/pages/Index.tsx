@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { Heart, Send, Grid3X3, List } from 'lucide-react';
+import { Send, Grid3X3, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -14,6 +14,22 @@ interface Message {
   username: string;
 }
 
+function convertSecondsToRelative(sec: number): string {
+  // 1s - 1s | 60s - 1m | 60m - 1hr | 24h - 1d | 7d - 1w | 4.3w - 1m | 12m - 1yr
+  const timeDiv = [1, 60, 60, 24, 7, 4.35, 12];
+  const timeName = [' second', ' minute', ' hour', ' day', ' week', ' month', ' year'];
+  for (let i = 0; i < 7; i++) {
+    const quo = Math.floor(sec / timeDiv[i]);
+    if (i < 6 && quo >= timeDiv[i+1]) {
+      sec /= timeDiv[i];
+      continue;
+    }
+    if (quo == 1) return quo + timeName[i];
+    return quo + timeName[i] + 's';
+  }
+  return 'literally just now. like at this very moment. how did this even happen?';
+}
+
 function convertTimestampToRelative(str: string): string {
   let diff = Date.now() - new Date(str).getTime();
   // 1000ms - 1s | 60s - 1m | 60m - 1hr | 24h - 1d | 7d - 1w | 4.3w - 1m | 12m - 1yr
@@ -22,7 +38,7 @@ function convertTimestampToRelative(str: string): string {
   for (let i = 0; i < 7; i++) {
     const quo = Math.floor(diff / timeDiv[i]);
     if (i < 6 && quo >= timeDiv[i+1]) {
-      diff /= timeDiv[i ];
+      diff /= timeDiv[i];
       continue;
     }
     if (quo == 1) return quo + timeName[i];
@@ -63,7 +79,8 @@ const Index = () => {
       toast({
         variant: "destructive",
         title: "Message failed to send",
-        description: `Error ${errorCode}: ${errorMessage}`,
+        duration: 3000,
+        description: errorCode != 429 ? `Error ${errorCode}: ${errorMessage}` : `You can only post one ciallo~ per day! next reset: ${convertSecondsToRelative(e.response?.data['retry-after'])}`,
       });
       
       loadMessagesFromAPI();
